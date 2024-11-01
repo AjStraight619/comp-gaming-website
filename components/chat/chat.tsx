@@ -5,6 +5,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Input } from '../ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ScrollArea } from '../ui/scroll-area';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '../ui/card';
 
 const popupVariants = {
   hidden: { opacity: 0, y: 50, scale: 0.9 },
@@ -48,55 +56,47 @@ const Chat = ({ id, username }: { id: string; username: string }) => {
         {isChatOpen ? 'Close Chat' : 'Open Chat'}
       </button>
 
-      {/* {messages.map((msg, idx) => (
-        <span key={idx}>{msg.content}</span>
-      ))} */}
-
       {isConnected ? <p>Connected</p> : <p>Not Connected</p>}
 
       <AnimatePresence>
         {isChatOpen && (
           <motion.div
-            className="fixed bottom-6 right-6 bg-white p-4 rounded shadow-lg w-80"
+            className="fixed bottom-6 right-6 w-80"
             variants={popupVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
             transition={{ duration: 0.3, ease: 'easeOut' }}
           >
-            {/* Display user list */}
-            <div className="mb-4">
-              <h3 className="text-lg font-bold">Users in Chat</h3>
-              {users.map((user, idx) => (
-                <div key={idx} className="text-gray-700">
-                  {user.username}
-                </div>
-              ))}
-            </div>
-
-            {/* Chat Messages */}
-            <form onSubmit={handleSendMessage} className="space-y-2">
-              <ScrollArea>
-                <div className="max-h-40 mb-4 bg-gray-200">
-                  {messages.map((msg, idx) => (
-                    <div key={idx} className="flex flex-col gap-y-1">
-                      <div className="inline-flex gap-x-2">
-                        <span className="font-semibold">{msg.username}:</span>
-                        <span>{msg.content}</span>
+            <Card className="bg-white rounded shadow-lg w-full">
+              <CardHeader>
+                <CardTitle>Chats</CardTitle>
+                <CardDescription></CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSendMessage} className="space-y-2">
+                  <ScrollArea className="h-40">
+                    {messages.map((msg, idx) => (
+                      <div key={idx} className="flex flex-col gap-y-1">
+                        <div className="inline-flex gap-x-2">
+                          <span className="font-semibold">{msg.username}:</span>
+                          <span>{msg.content}</span>
+                        </div>
+                        <div ref={chatContentRef} />
                       </div>
-                      <div ref={chatContentRef} />
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-              {/* Input for sending messages */}
-              <Input
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                placeholder="Type a message"
-                className="w-full"
-              />
-            </form>
+                    ))}
+                  </ScrollArea>
+                  <CardFooter className="p-0">
+                    <Input
+                      value={input}
+                      onChange={e => setInput(e.target.value)}
+                      placeholder="Type a message"
+                      className="w-full"
+                    />
+                  </CardFooter>
+                </form>
+              </CardContent>
+            </Card>
           </motion.div>
         )}
       </AnimatePresence>
