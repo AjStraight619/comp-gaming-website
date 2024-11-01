@@ -4,7 +4,8 @@ import './globals.css';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from '@/providers/theme-provider';
 import { ClerkProvider } from '@clerk/nextjs';
-import { dark } from '@clerk/';
+import { dark } from '@clerk/themes';
+import Navbar from '@/components/nav/nav';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -29,9 +30,9 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider appearance={{ baseTheme: dark }}>
-      <html lang="en">
+      <html suppressHydrationWarning lang="en">
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased w-full`}
         >
           <ThemeProvider
             attribute="class"
@@ -39,6 +40,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <Navbar />
             <main>{children}</main>
             <Toaster position="top-right" />
           </ThemeProvider>
