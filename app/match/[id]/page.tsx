@@ -2,9 +2,9 @@ import Chat from '@/components/chat/chat';
 import React from 'react';
 
 type MatchPageProps = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 const MatchPage = async ({ params }: MatchPageProps) => {
