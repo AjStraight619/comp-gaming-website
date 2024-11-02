@@ -16,18 +16,34 @@ export const SignIn = () => {
   );
 };
 
+export const SignUp = () => {
+  return (
+    <Button variant="secondary" asChild>
+      <SignUpButton />
+    </Button>
+  );
+};
+
+export const SignOut = () => {
+  return (
+    <Button variant="secondary" asChild>
+      <SignOutButton />
+    </Button>
+  );
+};
+
 export const AuthButtons = () => {
   return (
-    <div>
+    <>
       <SignedIn>
-        <div className="flex flex-row items-center gap-x-2">
-          <SignOutButton />
-        </div>
+        <SignOut />
       </SignedIn>
       <SignedOut>
-        <SignIn />
-        <SignUpButton />
+        <div className="flex items-center gap-x-2">
+          <SignIn />
+          <SignUp />
+        </div>
       </SignedOut>
-    </div>
+    </>
   );
 };
