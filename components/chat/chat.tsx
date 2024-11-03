@@ -13,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from '../ui/card';
+import { Button } from '../ui/button';
 
 const popupVariants = {
   hidden: { opacity: 0, y: 50, scale: 0.9 },
@@ -21,13 +22,12 @@ const popupVariants = {
 };
 
 const Chat = ({ id, username }: { id: string; username: string }) => {
-  const { isConnected, sendMessage, messages, users } = useSocketIO(
-    id,
-    username,
-  );
+  const { isConnected, sendMessage, messages, users, startTimer, timer } =
+    useSocketIO(id, username);
   const [input, setInput] = useState('');
   const [isChatOpen, setIsChatOpen] = useState(false);
   const chatContentRef = useRef<HTMLDivElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,10 +45,29 @@ const Chat = ({ id, username }: { id: string; username: string }) => {
     if (chatContentRef.current) {
       chatContentRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [messages]);
+
+    // const handleClickOutside = (event: MouseEvent) => {
+    //   if (
+    //     popupRef.current &&
+    //     !popupRef.current.contains(event.target as Node)
+    //   ) {
+    //     setIsChatOpen(false);
+    //   }
+    // };
+
+    // if (isChatOpen) {
+    //   document.addEventListener('mousedown', handleClickOutside);
+    // } else {
+    //   document.removeEventListener('mousedown', handleClickOutside);
+    // }
+
+    // return () => {
+    //   document.removeEventListener('mousedown', handleClickOutside);
+    // };
+  }, [isChatOpen]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-y-2">
+    <div className="">
       <button
         onClick={toggleChat}
         className="mb-4 p-2 bg-blue-500 text-white rounded"
@@ -56,11 +75,14 @@ const Chat = ({ id, username }: { id: string; username: string }) => {
         {isChatOpen ? 'Close Chat' : 'Open Chat'}
       </button>
 
-      {isConnected ? <p>Connected</p> : <p>Not Connected</p>}
+      {/* <Button onClick={() => startTimer(120)}>Start Timer: {timer}</Button>
+
+      {isConnected ? <p>Connected</p> : <p>Not Connected</p>} */}
 
       <AnimatePresence>
         {isChatOpen && (
           <motion.div
+            // ref={popupRef}
             className="fixed bottom-6 right-6 w-80"
             variants={popupVariants}
             initial="hidden"
@@ -68,7 +90,7 @@ const Chat = ({ id, username }: { id: string; username: string }) => {
             exit="exit"
             transition={{ duration: 0.3, ease: 'easeOut' }}
           >
-            <Card className="bg-white rounded shadow-lg w-full">
+            <Card className="rounded shadow-lg w-full">
               <CardHeader>
                 <CardTitle>Chats</CardTitle>
                 <CardDescription></CardDescription>

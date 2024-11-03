@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,8 +7,130 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id             String @id
-  finishedSettingUp Boolean @default(false)
+  id                String          @id
+  finishedSettingUp Boolean         @default(false)
+  accounts          LinkedAccount[]
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  userTeams         UserTeam[]      // Many-to-many relation with Team
+  userStats         UserStats[]
+  leaderboard       Leaderboard?
 }
+
+model LinkedAccount {
+  id          String     @id @default(cuid())
+  userId      String
+  user        User       @relation(fields: [userId], references: [id])
+  AccountType AccountType
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Game {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  maps        Map[]
+  matches     Match[]
+}
+
+model Match {
+  id           String       @id @default(cuid())
+  gameId       String
+  game         Game         @relation(fields: [gameId], references: [id])
+  startTime    DateTime
+  endTime      DateTime?
+  teamAId      String?
+  teamBId      String?
+  teamA        Team?        @relation("TeamAMatch", fields: [teamAId], references: [id])
+  teamB        Team?        @relation("TeamBMatch", fields: [teamBId], references: [id])
+  userStats    UserStats[]
+  matchFormat  MatchFormat
+  teamType     TeamType     // Specifies if it's a Solo, Duo, or Squad match
+  selectedMaps Map[]        @relation("MatchMaps")
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model Map {
+  id        String   @id @default(cuid())
+  name      String
+  imageUrl  String?
+  gameId    String
+  game      Game     @relation(fields: [gameId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  matches   Match[]  @relation("MatchMaps")
+}
+
+model Team {
+  id              String       @id @default(cuid())
+  name            String
+  teamType        TeamType     // Specifies if it's Solo, Duo, or Squad
+  maxPlayers      Int          // Specifies the maximum number of players (1 for Solo, 2 for Duo, etc.)
+  userTeams       UserTeam[]   // Many-to-many relation with User
+  matchesAsTeamA  Match[]      @relation("TeamAMatch")
+  matchesAsTeamB  Match[]      @relation("TeamBMatch")
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+
+model UserTeam {
+  id        String @id @default(cuid())
+  userId    String
+  teamId    String
+  user      User   @relation(fields: [userId], references: [id])
+  team      Team   @relation(fields: [teamId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, teamId]) // Ensures each user joins each team only once
+}
+
+model UserStats {
+  id        String  @id @default(cuid())
+  matchId   String
+  match     Match   @relation(fields: [matchId], references: [id])
+  userId    String
+  user      User    @relation(fields: [userId], references: [id])
+  kills     Int
+  deaths    Int
+  assists   Int
+  score     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Leaderboard {
+  id         String  @id @default(cuid())
+  userId     String  @unique
+  user       User    @relation(fields: [userId], references: [id])
+  totalKills Int
+  totalDeaths Int
+  winCount   Int
+  rank       Int
+  updatedAt  DateTime @updatedAt
+}
+
+enum AccountType {
+  BattleNet
+  Activision
+}
+
+enum MatchFormat {
+  BO1
+  BO3
+  BO5
+}
+
+enum TeamType {
+  Solo
+  Duo
+  Squad
+}
+
+
+
+

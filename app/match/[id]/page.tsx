@@ -1,4 +1,5 @@
 import Chat from '@/components/chat/chat';
+import ChatBox from '@/components/chat/chat-box';
 import React from 'react';
 
 type MatchPageProps = {
@@ -13,7 +14,8 @@ const MatchPage = async ({ params }: MatchPageProps) => {
   const username = 'Vital';
   return (
     <div>
-      <Chat id={id} username={username} />
+      {/* <Chat id={id} username={username} /> */}
+      <ChatBox id={id} username={username} />
     </div>
   );
 };

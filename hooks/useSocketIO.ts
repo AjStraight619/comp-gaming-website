@@ -13,7 +13,7 @@ type User = {
 
 export const useSocketIO = (roomId: string, username: string) => {
   const [isConnected, setIsConnected] = useState(socket.connected);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]); // ! Use optimistic here because we are going to use websocket and
   const [users, setUsers] = useState<User[]>([]);
   const [timer, setTimer] = useState(0);
 
@@ -78,5 +78,5 @@ export const useSocketIO = (roomId: string, username: string) => {
     }
   };
 
-  return { isConnected, messages, sendMessage, startTimer, users };
+  return { isConnected, messages, sendMessage, startTimer, timer, users };
 };

@@ -6,6 +6,8 @@ import { ThemeProvider } from '@/providers/theme-provider';
 import { ClerkProvider } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
 import Navbar from '@/components/nav/nav';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { AppSidebar } from '@/components/nav/app-sidebar';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -32,7 +34,7 @@ export default function RootLayout({
     <ClerkProvider appearance={{ baseTheme: dark }}>
       <html suppressHydrationWarning lang="en">
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased w-full`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           <ThemeProvider
             attribute="class"
@@ -40,8 +42,14 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <Navbar />
-            <main>{children}</main>
+            <SidebarProvider>
+              {/* <Navbar /> */}
+              <AppSidebar />
+              <main className="flex-1">
+                <SidebarTrigger />
+                {children}
+              </main>
+            </SidebarProvider>
             <Toaster position="top-right" />
           </ThemeProvider>
         </body>
