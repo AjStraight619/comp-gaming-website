@@ -43,10 +43,10 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <SidebarProvider>
-              {/* <Navbar /> */}
-              <AppSidebar />
+              <Navbar />
+              {/* <AppSidebar /> */}
               <main className="flex-1">
-                <SidebarTrigger />
+                {/* <SidebarTrigger /> */}
                 {children}
               </main>
             </SidebarProvider>

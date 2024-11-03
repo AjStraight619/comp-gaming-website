@@ -8,15 +8,19 @@ datasource db {
 }
 
 model User {
-  id              String       @id @default(cuid())
-  finishedSettingUp Boolean         @default(false)
-  accounts          LinkedAccount[]
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-  userTeams         UserTeam[]      
-  userStats         UserStats[]
-  leaderboard       Leaderboard?
-  clerkUserId       String?         @unique
+  id               String       @id @default(cuid())
+  firstName        String?
+  lastName         String?
+  email            String?      @unique
+  phoneNumber      String?      @unique
+  finishedSettingUp Boolean     @default(false)
+  accounts         LinkedAccount[]
+  userTeams        UserTeam[]      
+  userStats        UserStats[]
+  leaderboard      Leaderboard?
+  clerkUserId      String?      @unique
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
 }
 
 model LinkedAccount {

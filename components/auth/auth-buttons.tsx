@@ -4,6 +4,7 @@ import {
   SignInButton,
   SignOutButton,
   SignUpButton,
+  UserButton,
 } from '@clerk/nextjs';
 import React from 'react';
 import { Button } from '../ui/button';
@@ -36,6 +37,7 @@ export const AuthButtons = () => {
   return (
     <>
       <SignedIn>
+        <UserButton />
         <SignOut />
       </SignedIn>
       <SignedOut>
