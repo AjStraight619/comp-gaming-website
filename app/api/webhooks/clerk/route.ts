@@ -35,7 +35,7 @@ export async function POST(req: Request) {
         break;
       }
       case 'user.deleted': {
-        user = await prisma.user.delete({
+        user = await db.user.delete({
           where: {
             clerkUserId,
           },
