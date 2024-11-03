@@ -13,7 +13,7 @@ model User {
   accounts          LinkedAccount[]
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
-  userTeams         UserTeam[]      // Many-to-many relation with Team
+  userTeams         UserTeam[]      
   userStats         UserStats[]
   leaderboard       Leaderboard?
 }
@@ -43,13 +43,14 @@ model Match {
   game         Game         @relation(fields: [gameId], references: [id])
   startTime    DateTime
   endTime      DateTime?
+  gameType     GameType
   teamAId      String?
   teamBId      String?
   teamA        Team?        @relation("TeamAMatch", fields: [teamAId], references: [id])
   teamB        Team?        @relation("TeamBMatch", fields: [teamBId], references: [id])
   userStats    UserStats[]
   matchFormat  MatchFormat
-  teamType     TeamType     // Specifies if it's a Solo, Duo, or Squad match
+  teamType     TeamType     
   selectedMaps Map[]        @relation("MatchMaps")
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
@@ -69,9 +70,9 @@ model Map {
 model Team {
   id              String       @id @default(cuid())
   name            String
-  teamType        TeamType     // Specifies if it's Solo, Duo, or Squad
-  maxPlayers      Int          // Specifies the maximum number of players (1 for Solo, 2 for Duo, etc.)
-  userTeams       UserTeam[]   // Many-to-many relation with User
+  teamType        TeamType     
+  maxPlayers      Int          
+  userTeams       UserTeam[]   
   matchesAsTeamA  Match[]      @relation("TeamAMatch")
   matchesAsTeamB  Match[]      @relation("TeamBMatch")
   createdAt       DateTime     @default(now())
@@ -86,7 +87,7 @@ model UserTeam {
   team      Team   @relation(fields: [teamId], references: [id])
   createdAt DateTime @default(now())
 
-  @@unique([userId, teamId]) // Ensures each user joins each team only once
+  @@unique([userId, teamId]) 
 }
 
 model UserStats {
@@ -129,6 +130,12 @@ enum TeamType {
   Solo
   Duo
   Squad
+}
+
+enum GameType {
+  Hardpoint
+  SnD
+  Variant
 }
 
 
