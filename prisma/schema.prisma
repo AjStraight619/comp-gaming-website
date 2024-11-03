@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id                String          @id
+  id              String       @id @default(cuid())
   finishedSettingUp Boolean         @default(false)
   accounts          LinkedAccount[]
   createdAt         DateTime        @default(now())
@@ -16,6 +16,7 @@ model User {
   userTeams         UserTeam[]      
   userStats         UserStats[]
   leaderboard       Leaderboard?
+  clerkUserId       String?         @unique
 }
 
 model LinkedAccount {
@@ -38,22 +39,29 @@ model Game {
 }
 
 model Match {
-  id           String       @id @default(cuid())
-  gameId       String
-  game         Game         @relation(fields: [gameId], references: [id])
-  startTime    DateTime
-  endTime      DateTime?
-  gameType     GameType
-  teamAId      String?
-  teamBId      String?
-  teamA        Team?        @relation("TeamAMatch", fields: [teamAId], references: [id])
-  teamB        Team?        @relation("TeamBMatch", fields: [teamBId], references: [id])
-  userStats    UserStats[]
-  matchFormat  MatchFormat
-  teamType     TeamType     
-  selectedMaps Map[]        @relation("MatchMaps")
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  id              String       @id @default(cuid())
+  gameId          String
+  game            Game         @relation(fields: [gameId], references: [id])
+  isInProgress    Boolean
+  startTime       DateTime
+  endTime         DateTime?
+  gameType        GameType
+  teamAId         String?
+  teamBId         String?
+  teamA           Team?        @relation("TeamAMatch", fields: [teamAId], references: [id])
+  teamB           Team?        @relation("TeamBMatch", fields: [teamBId], references: [id])
+  winnerId        String?
+  winner          Team?        @relation("WinningTeam", fields: [winnerId], references: [id])
+  isReported      Boolean      @default(false)
+  reportingTeamId String?      // Track the team that reported the win
+  reportingTeam   Team?        @relation("ReportingTeam", fields: [reportingTeamId], references: [id]) // Team that reported this match
+  userStats       UserStats[]
+  matchFormat     MatchFormat
+  teamType        TeamType
+  selectedMaps    Map[]        @relation("MatchMaps")
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  disputes        Dispute[]    
 }
 
 model Map {
@@ -70,11 +78,16 @@ model Map {
 model Team {
   id              String       @id @default(cuid())
   name            String
-  teamType        TeamType     
-  maxPlayers      Int          
-  userTeams       UserTeam[]   
+  teamType        TeamType
+  maxPlayers      Int
+  userTeams       UserTeam[]
   matchesAsTeamA  Match[]      @relation("TeamAMatch")
   matchesAsTeamB  Match[]      @relation("TeamBMatch")
+  matchesWon      Match[]      @relation("WinningTeam")
+  disputesRaised  Dispute[]    @relation("RaisedByTeam")
+  reportedMatches Match[]      @relation("ReportingTeam") 
+  wins            Int          @default(0)
+  losses          Int          @default(0)
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
 }
@@ -84,7 +97,7 @@ model UserTeam {
   userId    String
   teamId    String
   user      User   @relation(fields: [userId], references: [id])
-  team      Team   @relation(fields: [teamId], references: [id])
+  team      Team   @relation(fields: [teamId], references: [id], onDelete: Cascade) 
   createdAt DateTime @default(now())
 
   @@unique([userId, teamId]) 
@@ -115,6 +128,19 @@ model Leaderboard {
   updatedAt  DateTime @updatedAt
 }
 
+model Dispute {
+  id            String   @id @default(cuid())
+  matchId       String
+  match         Match    @relation(fields: [matchId], references: [id])
+  raisedByTeamId String
+  raisedByTeam  Team     @relation("RaisedByTeam", fields: [raisedByTeamId], references: [id])
+  reason        String   
+  isResolved    Boolean  @default(false)
+  resolution    String?  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
 enum AccountType {
   BattleNet
   Activision
@@ -137,6 +163,7 @@ enum GameType {
   SnD
   Variant
 }
+
 
 
 
